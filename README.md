@@ -3,19 +3,7 @@
 A tiny retro desktop music-player **widget** for Windows, with a pixelated early-2000s look.
 Built with Electron and plain HTML/CSS/JS.
 
-```
-+---------------------------------+
-| PIXEL TUNES 2003   PIN MINI _ X |
-| 00:03             PLAY  128KBPS |
-| *** YOUR SONG NAME SCROLLS ***  |
-| [pixel equalizer bars........]  |
-| |<   >   ■   >|   VOL           |
-| SHUFFLE   REPEAT   CLEAR        |
-| PLAYLIST                 5 SONGS|
-+---------------------------------+
-```
-
-(Add a real screenshot here: take one of the player, upload it to the repo, and replace this box with `![screenshot](screenshot.png)`.)
+![Pixel Tunes 2003 screenshot](screenshot.png)
 
 ## Features
 
