@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PIXEL TUNES 2003</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="node_modules/@fontsource/press-start-2p/index.css">
+<style>
+:root{
+  --bg:#0b0b1e; --chassis:#8b8fa8; --chassis-hi:#c9ccdc; --chassis-lo:#4a4d63;
+  --lcd:#0c1a0c; --lcd-on:#5dff6a; --lcd-dim:#1f5a26; --accent:#ff7a1a; --pink:#ff3d8b;
+}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html,body{height:100%;background:transparent}
+body{
+  background:transparent; overflow:hidden;
+  font-family:'Press Start 2P',monospace,Courier;
+  color:var(--lcd-on); display:flex; justify-content:center; align-items:flex-start; padding:10px;
+  image-rendering:pixelated; user-select:none;
+}
+.player{
+  width:340px; background:var(--chassis); padding:8px;
+  border:4px solid; border-color:var(--chassis-hi) var(--chassis-lo) var(--chassis-lo) var(--chassis-hi);
+  box-shadow:0 0 0 3px #000;
+}
+.titlebar{
+  background:linear-gradient(90deg,#2a1b6e,#b0308c 60%,var(--accent));
+  color:#fff; font-size:8px; padding:6px; display:flex; justify-content:space-between; align-items:center;
+  border:2px solid #000; margin-bottom:8px; letter-spacing:1px;
+}
+.titlebar{-webkit-app-region:drag;cursor:move}
+.wb{-webkit-app-region:no-drag;display:flex;gap:4px}
+.wb button{font-size:7px;padding:3px 5px;outline:1px solid #000;border-width:2px;color:#111}
+.wb button.on{color:var(--pink)}
+.player.compact .opts,.player.compact .plhead,.player.compact #list,.player.compact .foot,.player.compact .credit{display:none}
+.lcd{
+  background:var(--lcd); border:4px solid; border-color:var(--chassis-lo) var(--chassis-hi) var(--chassis-hi) var(--chassis-lo);
+  padding:8px; position:relative;
+}
+.lcd::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(#0000 0 2px,#00000030 2px 3px)}
+.row{display:flex;justify-content:space-between;align-items:center}
+#time{font-size:20px;text-shadow:0 0 6px var(--lcd-on)}
+.tiny{font-size:7px;color:var(--lcd-dim)}
+.tiny.on{color:var(--lcd-on)}
+#marquee{font-size:9px;margin:8px 0 6px;height:12px;white-space:pre;overflow:hidden;color:var(--lcd-on)}
+canvas#vis{width:100%;height:48px;display:block;background:#000;border:2px solid var(--lcd-dim);image-rendering:pixelated}
+.bar{height:14px;background:#000;border:2px solid var(--lcd-dim);margin-top:8px;position:relative;cursor:pointer}
+.bar .fill{height:100%;width:0;background:repeating-linear-gradient(90deg,var(--lcd-on) 0 6px,#0000 6px 8px)}
+.bar.vol{height:10px}
+.bar.vol .fill{background:repeating-linear-gradient(90deg,var(--accent) 0 6px,#0000 6px 8px)}
+.controls{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 6px}
+button{
+  font-family:inherit;font-size:10px;padding:10px 0;cursor:pointer;color:#111;background:var(--chassis);
+  border:3px solid; border-color:var(--chassis-hi) var(--chassis-lo) var(--chassis-lo) var(--chassis-hi);
+  outline:2px solid #000;
+}
+button:active,button.on{border-color:var(--chassis-lo) var(--chassis-hi) var(--chassis-hi) var(--chassis-lo);background:#7a7e96;transform:translate(1px,1px)}
+button.on{color:var(--pink)}
+button.big{background:var(--accent);color:#000}
+.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.opts button{font-size:7px;padding:8px 0}
+.volrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:7px;color:#111}
+.volrow .bar{flex:1;margin-top:0}
+.plhead{background:#000;color:var(--pink);font-size:8px;padding:6px;display:flex;justify-content:space-between;border:2px solid #000}
+#list{height:170px;overflow-y:auto;background:var(--lcd);border:4px solid;border-color:var(--chassis-lo) var(--chassis-hi) var(--chassis-hi) var(--chassis-lo)}
+#list::-webkit-scrollbar{width:12px}
+#list::-webkit-scrollbar-track{background:#000}
+#list::-webkit-scrollbar-thumb{background:var(--chassis);border:2px solid #000}
+.item{font-size:8px;padding:7px 6px;display:flex;gap:6px;cursor:pointer;color:var(--lcd-on);border-bottom:1px dashed var(--lcd-dim)}
+.item .n{color:var(--lcd-dim);min-width:22px}
+.item .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .x{color:var(--pink);visibility:hidden}
+.item:hover{background:#133313}.item:hover .x{visibility:visible}
+.item.cur{background:var(--lcd-on);color:#000}.item.cur .n{color:#000}
+.empty{font-size:8px;line-height:16px;padding:14px;color:var(--lcd-dim);text-align:center}
+.foot{display:flex;gap:6px;margin-top:8px}
+.foot button{flex:1;font-size:7px;padding:9px 0}
+.drop{outline:3px dashed var(--pink);outline-offset:-6px}
+.credit{font-size:6px;text-align:center;margin-top:8px;color:#222}
+</style>
+</head>
+<body>
+<div class="player" id="app">
+  <div class="titlebar"><span>PIXEL TUNES 2003</span><span class="wb"><button id="wpin" title="Keep on top">PIN</button><button id="wlist" title="Mini / full">MINI</button><button id="wmin" title="Hide">_</button><button id="wx" title="Close">X</button></span></div>
+
+  <div class="lcd">
+    <div class="row">
+      <div id="time">00:00</div>
+      <div style="text-align:right">
+        <div class="tiny" id="st">STOP</div>
+        <div class="tiny" id="kbps">128KBPS</div>
+      </div>
+    </div>
+    <div id="marquee">*** WELCOME ***</div>
+    <canvas id="vis" width="96" height="16"></canvas>
+    <div class="bar" id="seek"><div class="fill" id="seekfill"></div></div>
+  </div>
+
+  <div class="controls">
+    <button id="prev" title="Previous">|&lt;</button>
+    <button id="play" class="big" title="Play / Pause">&gt;</button>
+    <button id="stop" title="Stop">■</button>
+    <button id="next" title="Next">&gt;|</button>
+    <button id="mute" title="Mute">VOL</button>
+  </div>
+
+  <div class="opts">
+    <button id="shuf">SHUFFLE</button>
+    <button id="rep">REPEAT</button>
+    <button id="clr">CLEAR</button>
+  </div>
+
+  <div class="volrow"><span>VOL</span><div class="bar vol" id="volbar"><div class="fill" id="volfill"></div></div></div>
+
+  <div class="plhead"><span>PLAYLIST</span><span id="count">0 SONGS</span></div>
+  <div id="list"></div>
+
+  <div class="foot">
+    <button id="addf">+ FILES</button>
+    <button id="addd">+ FOLDER</button>
+  </div>
+  <input type="file" id="fin" accept="audio/*" multiple hidden>
+  <input type="file" id="din" webkitdirectory multiple hidden>
+  <div class="credit">DRAG &amp; DROP SONGS HERE</div>
+</div>
+
+<audio id="au" preload="auto"></audio>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const au=$('au');
+let songs=[];          // {id,name,blob}
+let cur=-1, shuffle=false, repeat=false, url=null, ctx, analyser, data;
+let marqText='', marqPos=0;
+
+/* ---------- storage (IndexedDB keeps songs between sessions) ---------- */
+let db;
+const open=indexedDB.open('pixeltunes',1);
+open.onupgradeneeded=()=>open.result.createObjectStore('songs',{keyPath:'id',autoIncrement:true});
+open.onsuccess=()=>{db=open.result;load()};
+open.onerror=()=>{setMarq('NO STORAGE - SESSION ONLY')};
+function tx(mode){return db.transaction('songs',mode).objectStore('songs')}
+function load(){
+  const r=tx('readonly').getAll();
+  r.onsuccess=()=>{songs=r.result;render();setMarq(songs.length?'PRESS PLAY TO START':'ADD SONGS TO BEGIN')};
+}
+function save(file){
+  const rec={name:clean(file.name),blob:file};
+  return new Promise(res=>{
+    if(!db){songs.push(rec);return res()}
+    const r=tx('readwrite').add(rec);
+    r.onsuccess=()=>{rec.id=r.result;songs.push(rec);res()};
+    r.onerror=()=>res();
+  });
+}
+function clean(n){return n.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').toUpperCase()}
+
+async function addFiles(list){
+  const files=[...list].filter(f=>f.type.startsWith('audio/')||/\.(mp3|wav|ogg|m4a|flac|aac|opus)$/i.test(f.name));
+  if(!files.length){setMarq('NO AUDIO FILES FOUND');return}
+  files.sort((a,b)=>a.name.localeCompare(b.name));
+  for(const f of files) await save(f);
+  render();
+  if(cur<0&&songs.length) setMarq(songs.length+' SONGS READY - PRESS PLAY');
+}
+
+/* ---------- playlist UI ---------- */
+function render(){
+  const L=$('list'); L.innerHTML='';
+  $('count').textContent=songs.length+' SONGS';
+  if(!songs.length){L.innerHTML='<div class="empty">PLAYLIST EMPTY<br><br>CLICK + FILES OR + FOLDER<br>OR DROP MP3s HERE</div>';return}
+  songs.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='item'+(i===cur?' cur':'');
+    d.innerHTML='<span class="n">'+String(i+1).padStart(2,'0')+'</span><span class="t"></span><span class="x">X</span>';
+    d.querySelector('.t').textContent=s.name;
+    d.onclick=e=>{ if(e.target.className==='x'){remove(i)} else {playIndex(i)} };
+    L.appendChild(d);
+  });
+}
+function remove(i){
+  const s=songs[i];
+  if(db&&s.id!=null) tx('readwrite').delete(s.id);
+  songs.splice(i,1);
+  if(i===cur){au.pause();cur=-1;setState('STOP');setMarq('*** REMOVED ***')}
+  else if(i<cur)cur--;
+  render();
+}
+
+/* ---------- playback ---------- */
+function setupAudioGraph(){
+  if(ctx)return;
+  try{
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=ctx.createMediaElementSource(au);
+    analyser=ctx.createAnalyser();analyser.fftSize=64;
+    data=new Uint8Array(analyser.frequencyBinCount);
+    src.connect(analyser);analyser.connect(ctx.destination);
+  }catch(e){}
+}
+function playIndex(i){
+  if(i<0||i>=songs.length)return;
+  setupAudioGraph(); if(ctx&&ctx.state==='suspended')ctx.resume();
+  cur=i;
+  if(url)URL.revokeObjectURL(url);
+  url=URL.createObjectURL(songs[i].blob);
+  au.src=url; au.play();
+  setMarq('*** '+songs[i].name+' ***');
+  render();
+  const el=$('list').children[i]; if(el)el.scrollIntoView({block:'nearest'});
+}
+function next(auto){
+  if(!songs.length)return;
+  if(shuffle&&songs.length>1){let n;do{n=Math.floor(Math.random()*songs.length)}while(n===cur);return playIndex(n)}
+  let n=cur+1;
+  if(n>=songs.length){ if(repeat||!auto)n=0; else {setState('STOP');return} }
+  playIndex(n);
+}
+function prev(){
+  if(!songs.length)return;
+  if(au.currentTime>3){au.currentTime=0;return}
+  playIndex(cur<=0?songs.length-1:cur-1);
+}
+$('play').onclick=()=>{
+  if(!songs.length){setMarq('ADD SONGS FIRST!');return}
+  if(cur<0)return playIndex(0);
+  if(au.paused){setupAudioGraph();ctx&&ctx.resume();au.play()}else au.pause();
+};
+$('stop').onclick=()=>{au.pause();au.currentTime=0;setState('STOP')};
+$('next').onclick=()=>next(false);
+$('prev').onclick=prev;
+$('shuf').onclick=e=>{shuffle=!shuffle;e.target.classList.toggle('on',shuffle)};
+$('rep').onclick=e=>{repeat=!repeat;e.target.classList.toggle('on',repeat)};
+$('clr').onclick=()=>{
+  if(!songs.length)return;
+  if(!confirm('REMOVE ALL SONGS FROM PLAYER?'))return;
+  au.pause();cur=-1;songs=[];if(db)tx('readwrite').clear();render();setState('STOP');setMarq('PLAYLIST CLEARED');
+};
+au.onplay=()=>setState('PLAY');
+au.onpause=()=>{ if(au.currentTime>0&&!au.ended)setState('PAUSE') };
+au.onended=()=>next(true);
+au.onerror=()=>{setMarq('CANNOT PLAY THIS FILE');setTimeout(()=>next(true),1200)};
+au.onloadedmetadata=()=>{};
+function setState(s){if(window.api&&window.api.playing)window.api.playing(s==='PLAY');$('st').textContent=s;$('st').classList.toggle('on',s==='PLAY');$('play').textContent=s==='PLAY'?'II':'>'}
+
+/* ---------- time, seek, volume ---------- */
+const fmt=t=>{t=Math.floor(t||0);return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
+au.ontimeupdate=()=>{
+  $('time').textContent=fmt(au.currentTime);
+  $('seekfill').style.width=(au.duration?au.currentTime/au.duration*100:0)+'%';
+};
+$('seek').onclick=e=>{
+  if(!au.duration)return;const r=e.currentTarget.getBoundingClientRect();
+  au.currentTime=(e.clientX-r.left)/r.width*au.duration;
+};
+function setVol(v){v=Math.max(0,Math.min(1,v));au.volume=v;$('volfill').style.width=v*100+'%';try{localStorage.vol=v}catch(e){}}
+$('volbar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();au.muted=false;setVol((e.clientX-r.left)/r.width)};
+$('mute').onclick=e=>{au.muted=!au.muted;e.target.classList.toggle('on',au.muted)};
+let v=0.8;try{if(localStorage.vol)v=parseFloat(localStorage.vol)}catch(e){}
+setVol(v);
+
+/* ---------- marquee (stepped text scroll) ---------- */
+function setMarq(t){marqText=t+'     ';marqPos=0}
+setInterval(()=>{
+  const w=28;
+  if(marqText.length<=w){$('marquee').textContent=marqText;return}
+  const s=marqText+marqText;
+  $('marquee').textContent=s.substr(marqPos,w);
+  marqPos=(marqPos+1)%marqText.length;
+},220);
+setMarq('*** WELCOME TO PIXEL TUNES ***');
+
+/* ---------- pixel visualizer ---------- */
+const cv=$('vis'),c2=cv.getContext('2d');
+function draw(){
+  requestAnimationFrame(draw);
+  c2.fillStyle='#000';c2.fillRect(0,0,96,16);
+  const bars=16,bw=6;
+  for(let i=0;i<bars;i++){
+    let h;
+    if(analyser&&!au.paused){analyser.getByteFrequencyData(data);h=Math.round(data[i+1]/255*16)}
+    else h=0;
+    for(let y=0;y<h;y++){
+      c2.fillStyle=y>11?'#ff3d8b':y>7?'#ff7a1a':'#5dff6a';
+      c2.fillRect(i*bw,15-y,bw-1,1);
+    }
+  }
+}
+draw();
+
+/* ---------- add songs ---------- */
+$('addf').onclick=()=>$('fin').click();
+$('addd').onclick=()=>$('din').click();
+$('fin').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+$('din').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+const app=$('app');
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();app.classList.add('drop')}));
+['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();app.classList.remove('drop')}));
+document.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();$('play').click()}
+  else if(e.code==='ArrowRight'){au.currentTime+=5}
+  else if(e.code==='ArrowLeft'){au.currentTime-=5}
+  else if(e.code==='ArrowUp'){setVol(au.volume+0.05)}
+  else if(e.code==='ArrowDown'){setVol(au.volume-0.05)}
+  else if(e.key==='n'){next(false)}
+  else if(e.key==='p'){prev()}
+});
+})();
+
+/* ---------- desktop widget controls (only inside the app) ---------- */
+(function(){
+  const api=window.api, pl=document.querySelector('.player');
+  let compact=false; try{compact=localStorage.compact==='1'}catch(e){}
+  function fit(){ if(api) api.fit(Math.ceil(pl.getBoundingClientRect().height)+20) }
+  function applyCompact(){ pl.classList.toggle('compact',compact); document.getElementById('wlist').textContent=compact?'FULL':'MINI'; try{localStorage.compact=compact?'1':'0'}catch(e){} setTimeout(fit,30) }
+  document.getElementById('wlist').onclick=()=>{compact=!compact;applyCompact()};
+  applyCompact();
+  if(!api){ ['wpin','wmin','wx'].forEach(i=>document.getElementById(i).style.display='none'); return }
+  document.getElementById('wx').onclick=()=>api.close();
+  document.getElementById('wmin').onclick=()=>api.min();
+  const pin=document.getElementById('wpin');
+  api.getPin().then(v=>pin.classList.toggle('on',v));
+  pin.onclick=()=>api.pin().then(v=>pin.classList.toggle('on',v));
+})();
+</script>
+</body>
+</html>

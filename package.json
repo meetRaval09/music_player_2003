@@ -1,0 +1,31 @@
+{
+  "name": "pixel-tunes-2003",
+  "version": "1.1.0",
+  "description": "Retro pixel-style desktop music player widget",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win dir"
+  },
+  "dependencies": {
+    "@fontsource/press-start-2p": "^5.0.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.meet.pixeltunes",
+    "productName": "Pixel Tunes 2003",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "node_modules/@fontsource/press-start-2p/**/*"
+    ],
+    "win": {
+      "target": "dir",
+      "signAndEditExecutable": false
+    }
+  }
+}
