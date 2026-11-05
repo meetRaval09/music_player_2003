@@ -68,21 +68,84 @@ Node.js is a free program that lets your PC run and build this app.
 
 ## Step 4: Install the parts the app needs
 
-In the black window type this and press Enter. Wait about a minute until you can type again:
+In the Command Prompt, type this and press Enter. Wait until the installation finishes
+(about a minute, and you can type again when it's done):
 
-```
+```cmd
 npm install
 ```
 
-## Step 5: Run it
+## Step 5: Check that Electron installed (important)
 
+Electron is the engine that runs Pixel Tunes 2003. On some PCs, `npm install` finishes without
+downloading Electron's files, because newer versions of npm can block Electron's install script.
+Do these checks before you try to run the app. They take a minute.
+
+**1. Check whether Electron is installed:**
+
+```cmd
+npm ls electron
 ```
+
+You should see a line like `electron@33.x.x`. If it says `(empty)` or shows an error, run `npm install` again.
+
+**2. Check for blocked install scripts (only if your npm has this command):**
+
+```cmd
+npm install-scripts ls
+```
+
+If it says `Unknown command`, your npm is older and doesn't block scripts, so skip to part 3.
+
+If `electron` appears in the **blocked** list, approve it:
+
+```cmd
+npm install-scripts approve electron
+```
+
+If `electron-winstaller` is also in the blocked list, approve it too:
+
+```cmd
+npm install-scripts approve electron-winstaller
+```
+
+**3. Download Electron's files:**
+
+```cmd
+node node_modules\electron\install.js
+```
+
+Wait until the download reaches 100%.
+
+**4. Confirm the Electron program exists:**
+
+```cmd
+dir node_modules\electron\dist\electron.exe
+```
+
+You should see `electron.exe` listed. Then check its version:
+
+```cmd
+npx electron --version
+```
+
+You should see something like:
+
+```text
+v33.4.11
+```
+
+The exact numbers may be a little different on your PC. That's fine, as long as a version number appears.
+
+## Step 6: Run it
+
+```cmd
 npm start
 ```
 
-The pixel player opens. Close it with its **X** button when you're done trying it.
+The Pixel Tunes 2003 player should now open. Close it with its **X** button when you're done trying it.
 
-## Step 6: Make a real app you can double-click
+## Step 7: Make a real app you can double-click
 
 ```
 npm run build
@@ -97,11 +160,11 @@ dist\win-unpacked\Pixel Tunes 2003.exe
 > **Important:** keep the `.exe` inside its `win-unpacked` folder. It needs the other files next to it.
 > Don't copy the `.exe` alone. Make a **shortcut** to it instead (next step).
 
-## Step 7: Put a shortcut on your Desktop
+## Step 8: Put a shortcut on your Desktop
 
 Right-click `Pixel Tunes 2003.exe`, choose **Show more options**, then **Send to**, then **Desktop (create shortcut)**.
 
-## Step 8 (optional): Start it automatically with Windows
+## Step 9 (optional): Start it automatically with Windows
 
 1. Right-click `Pixel Tunes 2003.exe`, choose **Show more options**, then **Create shortcut**.
 2. Cut that shortcut (right-click, **Cut**).
@@ -130,6 +193,7 @@ Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 
 | Problem | What to do |
 | --- | --- |
+| `npm start` says Electron is missing or `electron.exe` not found | Do **Step 5** again, especially `node node_modules\electron\install.js` |
 | `node` or `npm` is "not recognized" | Install Node.js (Step 1), then restart your PC |
 | Build error: "Cannot create symbolic link ... privilege" | Open Command Prompt as **Administrator** (right-click, Run as administrator), go to the folder, run `npm run build` again. Or turn on **Developer Mode** in Settings, System, For developers |
 | Build error: "Access is denied" | The player is still running. Close it in Task Manager (`Ctrl + Shift + Esc`, right-click **Pixel Tunes 2003**, **End task**), then run `npm run build` again |
