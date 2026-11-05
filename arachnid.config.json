@@ -1,0 +1,26 @@
+{
+  "email_mode": "one",
+  "team_email": "",
+  "teams": {},
+  "people": {},
+  "always": {
+    "alarm": [
+      "@meetRaval09"
+    ]
+  },
+  "send": {
+    "alarm": [
+      "owners",
+      "author",
+      "always"
+    ],
+    "attention": [
+      "author"
+    ]
+  },
+  "mail": {
+    "host": "smtp.office365.com",
+    "port": 587,
+    "from": ""
+  }
+}
