@@ -20,7 +20,12 @@
     "files": [
       "main.js",
       "preload.js",
+      "buddy-server.js",
+      "spotify-link.js",
+      "spotify-web.js",
+      "spotify-helper.ps1",
       "index.html",
+      "pixelart.js",
       "node_modules/@fontsource/press-start-2p/**/*"
     ],
     "win": {

@@ -13,6 +13,9 @@ Built with Electron and plain HTML/CSS/JS.
 - Play, Pause, Stop, Next, Previous, Shuffle, Repeat, seek bar, volume
 - Your playlist is saved on your PC, so your songs are still there next time
 - Keeps playing when the screen turns black (it only blocks PC sleep while a song is playing)
+- **Pixel animation screen:** a looping pixel scene for every song (neon road, rainy city or space), or the song's own cover art turned into chunky pixels that flash with the bass
+- **Spotify mode (Windows, optional):** shows what the Spotify desktop app is playing, with the cover animation and play/pause/next/previous buttons, plus your playlists and song search (needs Spotify Premium and a free developer app, see below)
+- **Desk Buddy link (optional):** a small local server (port 8765) lets an ESP32 gadget show the current song and send play/pause/next
 - Keyboard shortcuts: `Space` play/pause, `Left/Right` jump 5 seconds, `Up/Down` volume, `N` next, `P` previous
 
 ## About music
@@ -189,6 +192,21 @@ Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 
 ---
 
+# Spotify mode (optional, Windows)
+
+Click **SPOTIFY** (next to CLEAR) to switch between your own MP3s and Spotify.
+
+- **Now playing and buttons:** works right away with the Spotify desktop app, no login needed. The player reads the song from Windows' own media controls and sends play/pause/next/previous back.
+- **Playlists and search (one-time setup, needs Spotify Premium):**
+  1. Verify your email on your Spotify account, then open `developer.spotify.com/dashboard` and click **Create app**.
+  2. Add the Redirect URI `http://127.0.0.1:8766/callback` and tick **Web API**, then save.
+  3. Copy the app's **Client ID** and paste it into the player, click **SAVE CLIENT ID**, then **CONNECT SPOTIFY** and press Agree in your browser.
+  4. Your playlists appear in the list. Click one to see its songs, or type in the search box and press Enter. Click a song to play it in Spotify.
+- Spotify only shows the songs of playlists you created or collaborate on, and search returns 10 results per page (Spotify's rule for new apps).
+- Only your Client ID is stored, on your PC, together with the login token. No password or client secret is used.
+
+---
+
 # Troubleshooting
 
 | Problem | What to do |
@@ -212,6 +230,10 @@ Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 | `index.html` | The whole player: look, buttons, playlist, visualizer, audio logic |
 | `main.js` | Creates the frameless widget window, remembers its position, blocks sleep during playback |
 | `preload.js` | Safe bridge between the page and the window controls |
+| `pixelart.js` | The pixel animation screen (scenes, cover-art pixelation, beat reaction) |
+| `spotify-link.js`, `spotify-helper.ps1` | Reads and controls the Spotify desktop app through Windows media controls |
+| `spotify-web.js` | Spotify Web API: PKCE login, playlists, search, play |
+| `buddy-server.js` | Local server for the ESP32 Desk Buddy |
 | `package.json` | App info and build settings (`electron-builder`, Windows `dir` target) |
 | `demo-music/` | 4 original chiptune demo tracks (CC0) so you can try the player |
 

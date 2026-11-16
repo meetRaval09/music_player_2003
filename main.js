@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, screen, powerSaveBlocker } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, screen, powerSaveBlocker, shell } = require('electron');
 
 // Keep music running when the window is hidden, covered, or the screen is off
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
@@ -7,8 +7,48 @@ let blockerId = null;
 const path = require('path');
 const fs = require('fs');
 
+const { createBuddyServer } = require('./buddy-server');
+const { createSpotifyLink } = require('./spotify-link');
+const { createSpotifyWeb } = require('./spotify-web');
+
 const WIDTH = 360; // player is 340 wide + 10px breathing room each side
 let win;
+
+// ---- Desk Buddy link (ESP32 gadget on your Wi-Fi) ----
+// Change BUDDY_KEY to your own secret word, and use the same word in the ESP32 sketch.
+const BUDDY_PORT = 8765;
+const BUDDY_KEY = 'buddy2003';
+let buddyState = { playing: false, pos: 0, dur: 0, index: 0, count: 0, title: '' };
+ipcMain.on('buddy:state', (_e, s) => { buddyState = { ...buddyState, ...s }; });
+
+// ---- Spotify link (Windows media controls) ----
+const spotify = createSpotifyLink((st) => { if (win && !win.isDestroyed()) win.webContents.send('spotify:state', st); });
+ipcMain.on('spotify:on', () => spotify.start());
+ipcMain.on('spotify:off', () => spotify.stop());
+ipcMain.on('spotify:cmd', (_e, name) => spotify.command(name));
+app.on('will-quit', () => spotify.stop());
+
+// ---- Spotify playlists (official Web API, your own login) ----
+const spWeb = createSpotifyWeb({ dir: app.getPath('userData'), openExternal: (u) => shell.openExternal(u) });
+ipcMain.handle('sp:status', () => spWeb.status());
+ipcMain.handle('sp:setClient', (_e, id) => spWeb.setClient(id));
+ipcMain.handle('sp:login', () => spWeb.login());
+ipcMain.handle('sp:logout', () => spWeb.logout());
+ipcMain.handle('sp:reset', () => spWeb.resetAll());
+ipcMain.handle('sp:playlists', () => spWeb.playlists());
+ipcMain.handle('sp:items', (_e, id) => spWeb.items(id));
+ipcMain.handle('sp:play', (_e, ctx, track, uris) => spWeb.play(ctx, track, uris));
+ipcMain.handle('sp:search', (_e, q, off) => spWeb.search(q, off));
+
+function startBuddyServer() {
+  const server = createBuddyServer({
+    key: BUDDY_KEY,
+    getState: () => buddyState,
+    onCommand: (name) => { if (win && !win.isDestroyed()) win.webContents.send('buddy:cmd', name); },
+  });
+  server.on('error', (e) => console.log('Desk Buddy link could not start:', e.message));
+  server.listen(BUDDY_PORT, '0.0.0.0');
+}
 
 const stateFile = () => path.join(app.getPath('userData'), 'window.json');
 function readState() {
@@ -92,6 +132,6 @@ if (!gotLock) {
   app.on('second-instance', () => {
     if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
   });
-  app.whenReady().then(createWindow);
+  app.whenReady().then(() => { createWindow(); startBuddyServer(); });
   app.on('window-all-closed', () => app.quit());
 }
