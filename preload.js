@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('api', {
   spPlaylists: () => ipcRenderer.invoke('sp:playlists'),
   spItems: (id) => ipcRenderer.invoke('sp:items', id),
   spPlay: (ctx, track, uris) => ipcRenderer.invoke('sp:play', ctx, track, uris),
+  spAlbum: (id) => ipcRenderer.invoke('sp:album', id),
   spSearch: (q, off) => ipcRenderer.invoke('sp:search', q, off),
   onBuddyCmd: (cb) => ipcRenderer.on('buddy:cmd', (_e, name) => cb(name)),
 });

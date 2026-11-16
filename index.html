@@ -79,6 +79,9 @@ button.big{background:var(--accent);color:#000}
 .sphelp input{width:100%;font-family:inherit;font-size:7px;padding:6px;margin:6px 0;background:#000;color:var(--lcd-on);border:2px solid var(--lcd-dim);outline:none}
 .sphelp button{width:100%;font-size:8px;padding:8px 0;margin-top:4px}
 .item.act{color:var(--pink)}
+.sphead{font-size:7px;color:var(--pink);padding:6px 6px 3px;border-top:1px dashed var(--lcd-dim)}
+.spsug{margin:0 -8px}
+.spsug .item{border-top:1px dashed var(--lcd-dim)}
 .empty{font-size:8px;line-height:16px;padding:14px;color:var(--lcd-dim);text-align:center}
 .foot{display:flex;gap:6px;margin-top:8px}
 .foot button{flex:1;font-size:7px;padding:9px 0}
@@ -365,6 +368,7 @@ async function spList(){
   if(!spot)return;
   if(!st.hasClient)return spSetup(L,st);
   if(!st.loggedIn)return spConnect(L);
+  if(spView==='album'&&spAlb)return spAlbumView(L);
   if(spView==='search')return spSearchView(L);
   if(spView==='tracks'&&spPl)return spTracks(L);
   return spLists(L);
@@ -412,47 +416,112 @@ async function spLists(L){
   const o=mk('div','item');o.appendChild(mk('span','n','--'));o.appendChild(mk('span','t','[ LOG OUT OF SPOTIFY ]'));
   o.onclick=async()=>{await api.spLogout();spView='lists';spList()};L.appendChild(o);
 }
+let spTimer=null, spSugSeq=0, spAlb=null, spAlbTracks=null, spFrom='lists'; const spCache={};
+function spPlayRow(ctx,uri,uris){
+  setMarq('*** ASKING SPOTIFY... ***');
+  api.spPlay(ctx,uri,uris).then(pr=>{if(!pr.ok)setMarq('*** '+pr.error+' ***')});
+}
+function spOpenAlbum(al,from){spAlb=al;spAlbTracks=null;spFrom=from;spView='album';spList()}
+function spAlbumRow(al,from){
+  const it=mk('div','item');it.appendChild(mk('span','n','CD'));
+  it.appendChild(mk('span','t',al.name+(al.artist?' - '+al.artist:'')+(al.year?' ('+al.year+')':'')));
+  it.onclick=()=>spOpenAlbum(al,from);return it;
+}
+function spLabel(text){const d=mk('div','sphead',text);return d}
 function spBar(L){
   const w=mk('div','sphelp');w.style.padding='6px 8px 0';
-  const i=mk('input');i.id='spq';i.placeholder='SEARCH SONGS - PRESS ENTER';i.value=spQ;
-  i.onkeydown=e=>{if(e.key==='Enter')spDoSearch(i.value,false)};
-  w.appendChild(i);L.appendChild(w);
+  const i=mk('input');i.id='spq';i.placeholder='SEARCH FILM, ALBUM OR SONG';i.value=spQ;
+  const sug=mk('div','spsug');
+  i.onkeydown=e=>{if(e.key==='Enter'){clearTimeout(spTimer);spSugSeq++;spDoSearch(i.value,false)}};
+  i.oninput=()=>{                                   // live suggestions while you type
+    clearTimeout(spTimer);
+    const q=i.value.trim();
+    if(q.length<2){spSugSeq++;sug.innerHTML='';return}
+    spTimer=setTimeout(async()=>{
+      const seq=++spSugSeq;
+      let data=spCache[q.toLowerCase()];
+      if(!data){
+        const r=await api.spSearch(q,0);
+        if(!r.ok)return;
+        data={albums:r.data.albums.slice(0,4),items:r.data.items.slice(0,3)};spCache[q.toLowerCase()]=data;
+      }
+      if(seq!==spSugSeq||!spot||i.value.trim()!==q)return;      // you kept typing: ignore old answer
+      sug.innerHTML='';
+      if(data.albums.length){sug.appendChild(spLabel('ALBUMS'));data.albums.forEach(al=>sug.appendChild(spAlbumRow(al,'lists')))}
+      if(data.items.length){
+        sug.appendChild(spLabel('SONGS'));
+        const uris=data.items.map(t=>t.uri);
+        data.items.forEach(t=>{
+          const it=mk('div','item');it.appendChild(mk('span','n','>'));
+          it.appendChild(mk('span','t',t.artist?t.name+' - '+t.artist:t.name));
+          it.onclick=()=>spPlayRow(null,t.uri,uris);
+          sug.appendChild(it);
+        });
+      }
+      if(!data.albums.length&&!data.items.length)sug.appendChild(mk('div','empty','NO MATCHES'));
+    },450);
+  };
+  w.appendChild(i);w.appendChild(sug);L.appendChild(w);
 }
+let spResAlb=[];
 async function spDoSearch(q,more){
   q=(q||'').trim();if(!q)return;
   const L=$('list');
-  if(!more){spQ=q;spRes=[];spMore=false}
+  if(!more){spQ=q;spRes=[];spResAlb=[];spMore=false}
   spView='search';
   $('plt').textContent='SEARCH: '+q.toUpperCase().slice(0,14);
   if(!more){L.innerHTML='';L.appendChild(mk('div','empty','SEARCHING...'))}
   const r=await api.spSearch(q,spRes.length);
   if(!spot||spView!=='search')return;
-  if(!r.ok){setMarq('*** '+r.error+' ***');if(!spRes.length){spView='lists'}return spList()}
-  spRes=spRes.concat(r.data.items);spMore=r.data.more;
+  if(!r.ok){setMarq('*** '+r.error+' ***');if(!spRes.length&&!spResAlb.length){spView='lists'}return spList()}
+  spRes=spRes.concat(r.data.items);spResAlb=spResAlb.concat(r.data.albums);spMore=r.data.more;
   spList();
 }
 function spSearchView(L){
   $('plt').textContent='SEARCH: '+spQ.toUpperCase().slice(0,14);
-  $('count').textContent=spRes.length+' FOUND';
+  $('count').textContent=spResAlb.length+' ALBUMS';
   L.innerHTML='';spBar(L);
   const back=mk('div','item act');back.appendChild(mk('span','n','<'));back.appendChild(mk('span','t','BACK TO PLAYLISTS'));
   back.onclick=()=>{spView='lists';spList()};L.appendChild(back);
-  if(!spRes.length){L.appendChild(mk('div','empty','NOTHING FOUND. TRY ANOTHER NAME.'));return}
-  const uris=spRes.map(t=>t.uri);
-  spRes.forEach((t,i)=>{
-    const it=mk('div','item');it.appendChild(mk('span','n',String(i+1).padStart(2,'0')));
-    it.appendChild(mk('span','t',t.artist?t.name+' - '+t.artist:t.name));
-    it.onclick=async()=>{
-      setMarq('*** ASKING SPOTIFY... ***');
-      const pr=await api.spPlay(null,t.uri,uris);
-      if(!pr.ok)setMarq('*** '+pr.error+' ***');
-    };
-    L.appendChild(it);
-  });
+  if(!spRes.length&&!spResAlb.length){L.appendChild(mk('div','empty','NOTHING FOUND. TRY ANOTHER NAME.'));return}
+  if(spResAlb.length){L.appendChild(spLabel('ALBUMS'));spResAlb.forEach(al=>L.appendChild(spAlbumRow(al,'search')))}
+  if(spRes.length){
+    L.appendChild(spLabel('SONGS'));
+    const uris=spRes.map(t=>t.uri);
+    spRes.forEach((t,i)=>{
+      const it=mk('div','item');it.appendChild(mk('span','n','>'));
+      it.appendChild(mk('span','t',t.artist?t.name+' - '+t.artist:t.name));
+      it.onclick=()=>spPlayRow(null,t.uri,uris);
+      L.appendChild(it);
+    });
+  }
   if(spMore){
     const m=mk('div','item act');m.appendChild(mk('span','n','+'));m.appendChild(mk('span','t','MORE RESULTS'));
     m.onclick=()=>spDoSearch(spQ,true);L.appendChild(m);
   }
+}
+async function spAlbumView(L){
+  const al=spAlb;
+  $('plt').textContent=al.name.toUpperCase().slice(0,22);
+  L.innerHTML='';L.appendChild(mk('div','empty','LOADING SONGS...'));
+  if(!spAlbTracks){
+    const r=await api.spAlbum(al.id);
+    if(!spot||spView!=='album'||spAlb!==al)return;
+    if(!r.ok){L.innerHTML='';const bk=mk('div','item act');bk.appendChild(mk('span','n','<'));bk.appendChild(mk('span','t','BACK'));bk.onclick=()=>{spView=spFrom;spList()};L.appendChild(bk);L.appendChild(mk('div','empty',r.error));return}
+    spAlbTracks=r.data;
+  }
+  L.innerHTML='';
+  const back=mk('div','item act');back.appendChild(mk('span','n','<'));back.appendChild(mk('span','t',spFrom==='search'?'BACK TO SEARCH':'BACK TO PLAYLISTS'));
+  back.onclick=()=>{spView=spFrom;spList()};L.appendChild(back);
+  $('count').textContent=spAlbTracks.length+' SONGS';
+  const all=mk('div','item act');all.appendChild(mk('span','n','>'));all.appendChild(mk('span','t','PLAY WHOLE ALBUM'));
+  all.onclick=()=>spPlayRow(al.uri,null,null);L.appendChild(all);
+  spAlbTracks.forEach((t,i)=>{
+    const it=mk('div','item');it.appendChild(mk('span','n',String(i+1).padStart(2,'0')));
+    it.appendChild(mk('span','t',t.artist?t.name+' - '+t.artist:t.name));
+    it.onclick=()=>spPlayRow(al.uri,t.uri,null);
+    L.appendChild(it);
+  });
 }
 async function spTracks(L){
   $('plt').textContent=spPl.name.toUpperCase().slice(0,22);
@@ -472,7 +541,7 @@ async function spTracks(L){
     const it=mk('div','item');it.appendChild(mk('span','n',String(i+1).padStart(2,'0')));
     it.appendChild(mk('span','t',t.artist?t.name+' - '+t.artist:t.name));
     it.onclick=async()=>{
-      setMarq('*** ASKING SPOTIFY... ***');
+      setMarq('*** ASKING SPOTIFY (STARTS IT IF CLOSED)... ***');
       const pr=await api.spPlay(pl.uri,t.uri);
       if(!pr.ok)setMarq('*** '+pr.error+' ***');
     };

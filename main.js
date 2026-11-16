@@ -29,7 +29,7 @@ ipcMain.on('spotify:cmd', (_e, name) => spotify.command(name));
 app.on('will-quit', () => spotify.stop());
 
 // ---- Spotify playlists (official Web API, your own login) ----
-const spWeb = createSpotifyWeb({ dir: app.getPath('userData'), openExternal: (u) => shell.openExternal(u) });
+const spWeb = createSpotifyWeb({ dir: app.getPath('userData'), openExternal: (u) => shell.openExternal(u), launchSpotify: () => shell.openExternal('spotify:') });
 ipcMain.handle('sp:status', () => spWeb.status());
 ipcMain.handle('sp:setClient', (_e, id) => spWeb.setClient(id));
 ipcMain.handle('sp:login', () => spWeb.login());
@@ -38,6 +38,7 @@ ipcMain.handle('sp:reset', () => spWeb.resetAll());
 ipcMain.handle('sp:playlists', () => spWeb.playlists());
 ipcMain.handle('sp:items', (_e, id) => spWeb.items(id));
 ipcMain.handle('sp:play', (_e, ctx, track, uris) => spWeb.play(ctx, track, uris));
+ipcMain.handle('sp:album', (_e, id) => spWeb.album(id));
 ipcMain.handle('sp:search', (_e, q, off) => spWeb.search(q, off));
 
 function startBuddyServer() {

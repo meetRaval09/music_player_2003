@@ -12,7 +12,9 @@ const SCOPES = 'playlist-read-private playlist-read-collaborative user-modify-pl
 
 function b64url(buf) { return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 
-function createSpotifyWeb({ dir, openExternal, fetchFn }) {
+function createSpotifyWeb({ dir, openExternal, launchSpotify, fetchFn, waitMs }) {
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const pollMs = waitMs == null ? 1000 : waitMs;
   const doFetch = fetchFn || ((...a) => fetch(...a));
   const file = path.join(dir, 'spotify-auth.json');
   let auth = { clientId: '', access: '', refresh: '', exp: 0 };
@@ -134,29 +136,48 @@ function createSpotifyWeb({ dir, openExternal, fetchFn }) {
 
     search: (q, offset) => wrap(async () => {
       q = String(q || '').trim().slice(0, 100);
-      if (!q) throw new Error('TYPE A SONG NAME FIRST');
+      if (!q) throw new Error('TYPE A SONG OR FILM NAME FIRST');
       const off = Math.max(0, Math.min(40, parseInt(offset, 10) || 0));
-      const j = await call('GET', '/search?type=track&limit=10&offset=' + off + '&q=' + encodeURIComponent(q));
-      const t = j.tracks || {};
+      const j = await call('GET', '/search?type=album,track&limit=10&offset=' + off + '&q=' + encodeURIComponent(q));
+      const t = j.tracks || {}, a = j.albums || {};
       const items = (t.items || []).filter(x => x && x.uri).map(x => ({
-        uri: x.uri, name: x.name || '(no name)', artist: (x.artists || []).map(a => a.name).join(', '),
+        uri: x.uri, name: x.name || '(no name)', artist: (x.artists || []).map(y => y.name).join(', '),
       }));
-      return { items, more: !!t.next && off + 10 < 40 };
+      const albums = (a.items || []).filter(x => x && x.id && x.uri).map(x => ({
+        id: x.id, uri: x.uri, name: x.name || '(no name)', artist: (x.artists || []).map(y => y.name).join(', '),
+        year: String(x.release_date || '').slice(0, 4), total: x.total_tracks == null ? null : x.total_tracks,
+      }));
+      return { items, albums, more: (!!t.next || !!a.next) && off + 10 < 40 };
+    }),
+
+    album: (id) => wrap(async () => {
+      if (!/^[0-9a-zA-Z]+$/.test(id || '')) throw new Error('BAD ALBUM');
+      const rows = await fetchAll('/albums/' + id + '/tracks?limit=50', 3);
+      return rows.filter(x => x && x.uri && !x.is_local).map(x => ({
+        uri: x.uri, name: x.name || '(no name)', artist: (x.artists || []).map(y => y.name).join(', '),
+      }));
     }),
 
     play: (contextUri, trackUri, uris) => wrap(async () => {
       const okUri = (u) => typeof u === 'string' && /^spotify:(track|episode):[0-9a-zA-Z]+$/.test(u);
       let body;
-      if (contextUri) body = { context_uri: contextUri, offset: { uri: trackUri } };
+      if (contextUri) body = trackUri ? { context_uri: contextUri, offset: { uri: trackUri } } : { context_uri: contextUri };
       else if (Array.isArray(uris) && uris.length && uris.every(okUri) && uris.includes(trackUri)) body = { uris: uris.slice(0, 50), offset: { uri: trackUri } };
       else if (okUri(trackUri)) body = { uris: [trackUri] };
       else throw new Error('BAD SONG');
       try { await call('PUT', '/me/player/play', body); }
       catch (e) {
-        if (e.status === 404) {                       // no active Spotify player: pick one of your devices
-          const d = await call('GET', '/me/player/devices');
-          const dev = (d.devices || [])[0];
-          if (!dev) throw new Error('OPEN THE SPOTIFY APP ON THIS PC FIRST');
+        if (e.status === 404) {                       // no active Spotify player yet
+          let dev = ((await call('GET', '/me/player/devices')).devices || [])[0];
+          if (!dev && launchSpotify) {                // start the Spotify app by itself and wait for it
+            launchSpotify();
+            for (let i = 0; i < 25 && !dev; i++) {
+              await sleep(pollMs);
+              dev = ((await call('GET', '/me/player/devices')).devices || [])[0];
+            }
+            if (dev) await sleep(pollMs);              // let it finish waking up
+          }
+          if (!dev) throw new Error('COULD NOT START SPOTIFY. OPEN IT ONCE, THEN TRY AGAIN');
           await call('PUT', '/me/player/play?device_id=' + encodeURIComponent(dev.id), body);
         } else if (e.status === 403) throw new Error('SPOTIFY SAYS NO: ' + (e.reason || e.message));
         else throw e;

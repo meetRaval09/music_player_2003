@@ -14,7 +14,7 @@ Built with Electron and plain HTML/CSS/JS.
 - Your playlist is saved on your PC, so your songs are still there next time
 - Keeps playing when the screen turns black (it only blocks PC sleep while a song is playing)
 - **Pixel animation screen:** a looping pixel scene for every song (neon road, rainy city or space), or the song's own cover art turned into chunky pixels that flash with the bass
-- **Spotify mode (Windows, optional):** shows what the Spotify desktop app is playing, with the cover animation and play/pause/next/previous buttons, plus your playlists and song search (needs Spotify Premium and a free developer app, see below)
+- **Spotify mode (Windows, optional):** shows what the Spotify desktop app is playing, with the cover animation and play/pause/next/previous buttons, plus your playlists and search for films, albums and songs (needs Spotify Premium and a free developer app, see below)
 - **Desk Buddy link (optional):** a small local server (port 8765) lets an ESP32 gadget show the current song and send play/pause/next
 - Keyboard shortcuts: `Space` play/pause, `Left/Right` jump 5 seconds, `Up/Down` volume, `N` next, `P` previous
 
@@ -201,7 +201,7 @@ Click **SPOTIFY** (next to CLEAR) to switch between your own MP3s and Spotify.
   1. Verify your email on your Spotify account, then open `developer.spotify.com/dashboard` and click **Create app**.
   2. Add the Redirect URI `http://127.0.0.1:8766/callback` and tick **Web API**, then save.
   3. Copy the app's **Client ID** and paste it into the player, click **SAVE CLIENT ID**, then **CONNECT SPOTIFY** and press Agree in your browser.
-  4. Your playlists appear in the list. Click one to see its songs, or type in the search box and press Enter. Click a song to play it in Spotify.
+  4. Your playlists appear in the list. Click one to see its songs, or type a film, album or song name in the search box (suggestions appear as you type). Click an album to see its songs, or play the whole album.
 - Spotify only shows the songs of playlists you created or collaborate on, and search returns 10 results per page (Spotify's rule for new apps).
 - Only your Client ID is stored, on your PC, together with the login token. No password or client secret is used.
 
