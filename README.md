@@ -1,51 +1,82 @@
-# Pixel Tunes 2003
+<p align="center">
+  <img src="docs/banner.png" alt="PIXEL TUNES 2003 - a tiny retro music player for your desktop" width="100%">
+</p>
 
-A tiny retro desktop music-player **widget** for Windows, with a pixelated early-2000s look.
-Built with Electron and plain HTML/CSS/JS.
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-ff7a1a?style=for-the-badge&logo=windows&logoColor=white" alt="Windows">
+  <img src="https://img.shields.io/badge/built%20with-Electron-5dff6a?style=for-the-badge&logo=electron&logoColor=black" alt="Electron">
+  <img src="https://img.shields.io/badge/looks-early%202000s-ff3d8b?style=for-the-badge" alt="Early 2000s look">
+  <img src="https://img.shields.io/badge/Spotify%20mode-optional-1db954?style=for-the-badge&logo=spotify&logoColor=white" alt="Spotify mode">
+</p>
 
-![Pixel Tunes 2003 screenshot](screenshot.png)
+<h3 align="center">
+  A floating Winamp-style music widget with live pixel-art animations,<br>
+  an optional Spotify mode, and a link for tiny ESP32 desk gadgets.
+</h3>
 
-## Features
+<p align="center">
+  <img src="docs/player.png" alt="Pixel Tunes 2003 player" width="300">
+  &nbsp;&nbsp;
+  <img src="docs/pixel-scenes.gif" alt="Pixel animation scenes" width="440">
+</p>
 
-- Pixel-art, Winamp-style player with a green LCD screen and a pixel equalizer
-- Floating widget with no Windows title bar: drag it anywhere, it remembers where you left it
-- **MINI** mode (screen and buttons only) and **PIN** (always on top, off by default)
-- Play, Pause, Stop, Next, Previous, Shuffle, Repeat, seek bar, volume
-- Your playlist is saved on your PC, so your songs are still there next time
-- Keeps playing when the screen turns black (it only blocks PC sleep while a song is playing)
-- **Pixel animation screen:** a looping pixel scene for every song (neon road, rainy city or space), or the song's own cover art turned into chunky pixels that flash with the bass
-- **Spotify mode (Windows, optional):** shows what the Spotify desktop app is playing, with the cover animation and play/pause/next/previous buttons, plus your playlists and search for films, albums and songs (needs Spotify Premium and a free developer app, see below)
-- **Desk Buddy link (optional):** a small local server (port 8765) lets an ESP32 gadget show the current song and send play/pause/next
-- Keyboard shortcuts: `Space` play/pause, `Left/Right` jump 5 seconds, `Up/Down` volume, `N` next, `P` previous
+---
 
-## About music
+## ✨ What it does
 
-**No music is included.** The player plays audio files that **you** add
-(MP3, WAV, OGG, M4A, FLAC, AAC). Please only use music you own or have the right to use,
-for example CDs you ripped yourself or songs you bought as downloads.
+| | |
+| --- | --- |
+| 🎛️ **Retro widget** | Green LCD screen, chunky buttons, pixel equalizer. No Windows title bar: drag it anywhere and it remembers its spot. |
+| 🌆 **Live pixel animation** | Every song gets its own looping scene (neon road, rainy city, space). If the song has cover art, it turns into chunky pixels and flashes with the bass. |
+| 🟢 **Spotify mode** | See what Spotify is playing, control it, browse your playlists, and search films, albums and songs without leaving the widget. |
+| 🤖 **Desk Buddy link** | A tiny ESP32 gadget with a screen can show the current song and send play, pause and next. |
+| 📌 **MINI and PIN** | Shrink it to just the screen and buttons, or pin it above every other window. |
+| 🔋 **Keeps playing** | Plays on when the screen goes black, and only blocks PC sleep while a song is actually playing. |
 
-Songs "downloaded" inside Spotify, JioSaavn, Gaana, YouTube Music or Apple Music subscriptions are locked
-inside those apps and cannot be added here.
+**Keyboard:** `Space` play/pause · `Left` / `Right` jump 5 seconds · `Up` / `Down` volume · `N` next · `P` previous
+
+---
+
+## 🎵 About music
+
+> [!NOTE]
+> **No music is included.** The player plays audio files that **you** add (MP3, WAV, OGG, M4A, FLAC, AAC).
+> Please only use music you own or have the right to use, for example CDs you ripped yourself or songs you bought as downloads.
+> Songs "downloaded" inside Spotify, JioSaavn, Gaana, YouTube Music or Apple Music are locked inside those apps and cannot be added here.
+> (That is what **Spotify mode** below is for.)
 
 ### Try it with the demo music
 
-The `demo-music` folder in this repository has 4 original 8-bit chiptune tracks made for this project
-(public domain, CC0). To try the player right away:
+The `demo-music` folder has 4 original 8-bit chiptune tracks made for this project (public domain, CC0):
 
 1. Open Pixel Tunes 2003.
 2. Click **+ FOLDER**.
 3. Choose the `demo-music` folder.
 4. Press the orange play button.
 
-The player keeps its own copy of songs you add. Remove the demo songs any time with the red **X** next to a song, or **CLEAR**.
+Remove them any time with the red **X** next to a song, or **CLEAR**.
 
 ---
 
-# How to install on your PC (step by step, no experience needed)
+## 🚀 Quick start (if you already have Node.js)
+
+```cmd
+git clone https://github.com/meetRaval09/music_player_2003.git
+cd music_player_2003
+npm install
+npm start
+```
+
+New to all this? Open the full guide just below. It starts from zero.
+
+<details>
+<summary><b>📖 Step-by-step install guide for Windows (no experience needed)</b></summary>
+
+<br>
 
 This works on **Windows 10 or 11**.
 
-## Step 1: Install Node.js (one time only)
+### Step 1: Install Node.js (one time only)
 
 Node.js is a free program that lets your PC run and build this app.
 
@@ -57,19 +88,19 @@ Node.js is a free program that lets your PC run and build this app.
    ```
    You should see a number like `v22.x.x`. If it says "not recognized", restart your PC and try again.
 
-## Step 2: Download this project
+### Step 2: Download this project
 
 - On this GitHub page, click the green **Code** button, then **Download ZIP**.
 - Right-click the ZIP and choose **Extract All**. Put the extracted folder somewhere permanent, for example `Documents\pixel-tunes-2003`.
   (Don't move it later, because the shortcuts you make will point to it.)
 
-## Step 3: Open a Command Prompt inside the folder
+### Step 3: Open a Command Prompt inside the folder
 
 1. Open the extracted folder in File Explorer, so you can see `index.html` and `package.json`.
 2. Click the **address bar** at the top of the window, type `cmd`, and press Enter.
    A black window opens, already inside the folder.
 
-## Step 4: Install the parts the app needs
+### Step 4: Install the parts the app needs
 
 In the Command Prompt, type this and press Enter. Wait until the installation finishes
 (about a minute, and you can type again when it's done):
@@ -78,7 +109,7 @@ In the Command Prompt, type this and press Enter. Wait until the installation fi
 npm install
 ```
 
-## Step 5: Check that Electron installed (important)
+### Step 5: Check that Electron installed (important)
 
 Electron is the engine that runs Pixel Tunes 2003. On some PCs, `npm install` finishes without
 downloading Electron's files, because newer versions of npm can block Electron's install script.
@@ -140,7 +171,7 @@ v33.4.11
 
 The exact numbers may be a little different on your PC. That's fine, as long as a version number appears.
 
-## Step 6: Run it
+### Step 6: Run it
 
 ```cmd
 npm start
@@ -148,7 +179,7 @@ npm start
 
 The Pixel Tunes 2003 player should now open. Close it with its **X** button when you're done trying it.
 
-## Step 7: Make a real app you can double-click
+### Step 7: Make a real app you can double-click
 
 ```
 npm run build
@@ -160,14 +191,15 @@ This takes a few minutes the first time. When it finishes, your app is here:
 dist\win-unpacked\Pixel Tunes 2003.exe
 ```
 
-> **Important:** keep the `.exe` inside its `win-unpacked` folder. It needs the other files next to it.
+> [!IMPORTANT]
+> Keep the `.exe` inside its `win-unpacked` folder. It needs the other files next to it.
 > Don't copy the `.exe` alone. Make a **shortcut** to it instead (next step).
 
-## Step 8: Put a shortcut on your Desktop
+### Step 8: Put a shortcut on your Desktop
 
 Right-click `Pixel Tunes 2003.exe`, choose **Show more options**, then **Send to**, then **Desktop (create shortcut)**.
 
-## Step 9 (optional): Start it automatically with Windows
+### Step 9 (optional): Start it automatically with Windows
 
 1. Right-click `Pixel Tunes 2003.exe`, choose **Show more options**, then **Create shortcut**.
 2. Cut that shortcut (right-click, **Cut**).
@@ -176,12 +208,13 @@ Right-click `Pixel Tunes 2003.exe`, choose **Show more options**, then **Send to
 To stop it starting with Windows, delete that shortcut from the same folder.
 (You can also use Task Manager: `Ctrl + Shift + Esc`, then **Startup apps**, then right-click **Pixel Tunes 2003**, then **Disable**.)
 
+</details>
+
 ---
 
-# Using the player
+## 🕹️ Using the player
 
-1. Click **+ FOLDER** to load a whole folder of songs, or **+ FILES** to pick songs.
-   You can also drag songs from File Explorer into the player.
+1. Click **+ FOLDER** to load a whole folder of songs, or **+ FILES** to pick songs. You can also drag songs from File Explorer into the player.
 2. Click a song in the playlist, or press the orange **>** button.
 3. Hover over a song and click the red **X** to remove it. **CLEAR** removes everything.
 4. **MINI** shrinks the widget. Press **FULL** to bring the playlist back.
@@ -192,52 +225,85 @@ Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 
 ---
 
-# Spotify mode (optional, Windows)
+## 🟢 Spotify mode (optional, Windows)
 
 Click **SPOTIFY** (next to CLEAR) to switch between your own MP3s and Spotify.
 
-- **Now playing and buttons:** works right away with the Spotify desktop app, no login needed. The player reads the song from Windows' own media controls and sends play/pause/next/previous back.
-- **Playlists and search (one-time setup, needs Spotify Premium):**
-  1. Verify your email on your Spotify account, then open `developer.spotify.com/dashboard` and click **Create app**.
-  2. Add the Redirect URI `http://127.0.0.1:8766/callback` and tick **Web API**, then save.
-  3. Copy the app's **Client ID** and paste it into the player, click **SAVE CLIENT ID**, then **CONNECT SPOTIFY** and press Agree in your browser.
-  4. Your playlists appear in the list. Click one to see its songs, or type a film, album or song name in the search box (suggestions appear as you type). Click an album to see its songs, or play the whole album.
-- Spotify only shows the songs of playlists you created or collaborate on, and search returns 10 results per page (Spotify's rule for new apps).
-- Only your Client ID is stored, on your PC, together with the login token. No password or client secret is used.
+| What you get | What you need |
+| --- | --- |
+| **Now playing + buttons** (song, artist, cover art animation, play / pause / next / previous) | Just the Spotify desktop app. No login: the player reads the song from Windows' own media controls. |
+| **Your playlists** | One-time setup below, and Spotify Premium |
+| **Search** for films, albums and songs, with suggestions as you type. Open an album to see all its songs, or play the whole album. | One-time setup below, and Spotify Premium |
+
+<details>
+<summary><b>One-time setup for playlists and search</b></summary>
+
+<br>
+
+1. Verify your email on your Spotify account, then open `developer.spotify.com/dashboard` and click **Create app**.
+2. Give it any name. Add the Redirect URI `http://127.0.0.1:8766/callback` exactly, and tick **Web API**, then save.
+3. Open the app's **Settings** and copy the **Client ID**.
+4. In the player, click **SPOTIFY**, paste the Client ID, click **SAVE CLIENT ID**, then **CONNECT SPOTIFY** and press Agree in your browser.
+5. Your playlists appear in the list. You only do this once.
+
+Good to know:
+
+- Spotify only shares the songs of playlists you created or collaborate on. For other playlists you will see just the name.
+- Search shows 10 results per page (Spotify's rule for new apps). Use **MORE RESULTS** for more.
+- Playing a song needs the Spotify desktop app. If it is closed, the player tries to start it for you (this can take a few seconds the first time).
+- Only your Client ID and your login token are stored, on your PC. No password and no client secret is used.
+
+</details>
 
 ---
 
-# Troubleshooting
+## 🤖 Desk Buddy (optional gadget link)
+
+While the player runs, it opens a small server on your home network (port `8765`, protected by a secret key you can change in `main.js`).
+A small ESP32 board with an OLED or a 16x2 LCD can ask it what is playing and show the song name and time, or send play, pause and next.
+Allow Pixel Tunes through Windows Firewall on **Private** networks when Windows asks.
+The ESP32 sketches are not in this repository yet.
+
+---
+
+## 🛠️ Troubleshooting
+
+<details>
+<summary><b>Click to open the list</b></summary>
+
+<br>
 
 | Problem | What to do |
 | --- | --- |
 | `npm start` says Electron is missing or `electron.exe` not found | Do **Step 5** again, especially `node node_modules\electron\install.js` |
 | `node` or `npm` is "not recognized" | Install Node.js (Step 1), then restart your PC |
 | Build error: "Cannot create symbolic link ... privilege" | Open Command Prompt as **Administrator** (right-click, Run as administrator), go to the folder, run `npm run build` again. Or turn on **Developer Mode** in Settings, System, For developers |
-| Build error: "Access is denied" | The player is still running. Close it in Task Manager (`Ctrl + Shift + Esc`, right-click **Pixel Tunes 2003**, **End task**), then run `npm run build` again |
+| Build error: "Access is denied" or "EBUSY ... resource busy or locked" | The player is still running. Close it in Task Manager (`Ctrl + Shift + Esc`, right-click **Pixel Tunes 2003**, **End task**), then run `npm run build` again |
+| The new version doesn't show up after a rebuild | The old one is still running. The app only allows one copy, so opening the new `.exe` just brings the old window forward. End it in Task Manager first |
 | Widget does not start with Windows | Check the shortcut is in `shell:startup`, and that it isn't **Disabled** in Task Manager under **Startup apps** |
 | Music stops when the PC is left alone | Settings, System, Power, then set **Make my device sleep after** to **Never** while plugged in. Closing a laptop lid also sleeps the PC |
 | A song says "CANNOT PLAY THIS FILE" | The file type isn't supported or is damaged. Try an MP3 |
 | Widget is off-screen after changing monitors | Delete the file `%APPDATA%\pixel-tunes-2003\window.json` and open the app again |
 | Spotify opens by itself at startup | That is Spotify's own setting, not this app. Disable it in Task Manager under **Startup apps** |
+| Spotify login says "INVALID_CLIENT: Invalid redirect URI" | In your Spotify developer app settings, add `http://127.0.0.1:8766/callback` exactly and press Save |
+
+</details>
 
 ---
 
-# For developers
+## 👩‍💻 For developers
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The whole player: look, buttons, playlist, visualizer, audio logic |
+| `index.html` | The whole player: look, buttons, playlist, visualizer, audio logic, Spotify screens |
 | `main.js` | Creates the frameless widget window, remembers its position, blocks sleep during playback |
 | `preload.js` | Safe bridge between the page and the window controls |
 | `pixelart.js` | The pixel animation screen (scenes, cover-art pixelation, beat reaction) |
 | `spotify-link.js`, `spotify-helper.ps1` | Reads and controls the Spotify desktop app through Windows media controls |
-| `spotify-web.js` | Spotify Web API: PKCE login, playlists, search, play |
+| `spotify-web.js` | Spotify Web API: PKCE login, playlists, search, albums, play |
 | `buddy-server.js` | Local server for the ESP32 Desk Buddy |
 | `package.json` | App info and build settings (`electron-builder`, Windows `dir` target) |
 | `demo-music/` | 4 original chiptune demo tracks (CC0) so you can try the player |
-
-Commands:
 
 ```bash
 npm install     # install dependencies
@@ -248,14 +314,21 @@ npm run build   # build dist/win-unpacked/Pixel Tunes 2003.exe
 The pixel font is bundled through the `@fontsource/press-start-2p` package, so the app works offline.
 Songs are stored in the browser's IndexedDB inside the app's own data folder.
 
-## Sharing a ready-to-run version (no Node.js needed for others)
+### Sharing a ready-to-run version (no Node.js needed for others)
 
 After `npm run build`, zip the whole `dist\win-unpacked` folder and upload the zip to this repository's
 **Releases** page. People can then download it, unzip it, and double-click `Pixel Tunes 2003.exe`.
 Windows may show a blue "Windows protected your PC" box because the app isn't code-signed:
 click **More info**, then **Run anyway**.
 
-## License
+---
 
-Add a license of your choice (for example MIT) before publishing, by clicking **Add file, Create new file**
+## 📜 License
+
+Add a license of your choice (for example MIT) before others reuse the code, by clicking **Add file, Create new file**
 on GitHub and naming it `LICENSE`. GitHub offers license templates.
+
+<p align="center">
+  <br>
+  Made with ♥ and way too many pixels by <a href="https://github.com/meetRaval09">Meet Raval</a>
+</p>
