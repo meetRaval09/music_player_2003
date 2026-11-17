@@ -325,8 +325,7 @@ click **More info**, then **Run anyway**.
 
 ## 📜 License
 
-Add a license of your choice (for example MIT) before others reuse the code, by clicking **Add file, Create new file**
-on GitHub and naming it `LICENSE`. GitHub offers license templates.
+MIT License. Free to use, change and share. See the [LICENSE](LICENSE) file.
 
 <p align="center">
   <br>
