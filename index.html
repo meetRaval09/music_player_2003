@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#0b0b1e; --chassis:#8b8fa8; --chassis-hi:#c9ccdc; --chassis-lo:#4a4d63;
-  --lcd:#0c1a0c; --lcd-on:#5dff6a; --lcd-dim:#1f5a26; --accent:#ff7a1a; --pink:#ff3d8b;
+  --lcd:#0c1a0c; --lcd-on:#5dff6a; --lcd-dim:#1f5a26; --accent:#ff7a1a; --pink:#ff3d8b; --ink:#111;
 }
 *{box-sizing:border-box;margin:0;padding:0;border-radius:0}
 html,body{height:100%;background:transparent}
@@ -24,15 +24,15 @@ body{
   box-shadow:0 0 0 3px #000;
 }
 .titlebar{
-  background:linear-gradient(90deg,#2a1b6e,#b0308c 60%,var(--accent));
+  background:linear-gradient(90deg,var(--tb1,#2a1b6e),var(--tb2,#b0308c) 60%,var(--accent));
   color:#fff; font-size:8px; padding:6px; display:flex; justify-content:space-between; align-items:center;
   border:2px solid #000; margin-bottom:8px; letter-spacing:1px;
 }
 .titlebar{-webkit-app-region:drag;cursor:move}
 .wb{-webkit-app-region:no-drag;display:flex;gap:4px}
-.wb button{font-size:7px;padding:3px 5px;outline:1px solid #000;border-width:2px;color:#111}
+.wb button{font-size:7px;padding:3px 5px;outline:1px solid #000;border-width:2px;color:var(--ink)}
 .wb button.on{color:var(--pink)}
-.player.compact .opts,.player.compact .plhead,.player.compact #list,.player.compact .foot,.player.compact .credit{display:none}
+.player.compact .opts,.player.compact .opts2,.player.compact .plhead,.player.compact #list,.player.compact .foot,.player.compact .credit{display:none}
 .lcd{
   background:var(--lcd); border:4px solid; border-color:var(--chassis-lo) var(--chassis-hi) var(--chassis-hi) var(--chassis-lo);
   padding:8px; position:relative;
@@ -52,7 +52,7 @@ canvas#vis{width:100%;height:48px;display:block;background:#000;border:2px solid
 .bar.vol .fill{background:repeating-linear-gradient(90deg,var(--accent) 0 6px,#0000 6px 8px)}
 .controls{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 6px}
 button{
-  font-family:inherit;font-size:10px;padding:10px 0;cursor:pointer;color:#111;background:var(--chassis);
+  font-family:inherit;font-size:10px;padding:10px 0;cursor:pointer;color:var(--ink);background:var(--chassis);
   border:3px solid; border-color:var(--chassis-hi) var(--chassis-lo) var(--chassis-lo) var(--chassis-hi);
   outline:2px solid #000;
 }
@@ -61,7 +61,9 @@ button.on{color:var(--pink)}
 button.big{background:var(--accent);color:#000}
 .opts{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
 .opts button{font-size:7px;padding:8px 0}
-.volrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:7px;color:#111}
+.opts2{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+.opts2 button{font-size:6px;padding:8px 0}
+.volrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:7px;color:var(--ink)}
 .volrow .bar{flex:1;margin-top:0}
 .plhead{background:#000;color:var(--pink);font-size:8px;padding:6px;display:flex;justify-content:space-between;border:2px solid #000}
 #list{height:170px;overflow-y:auto;background:var(--lcd);border:4px solid;border-color:var(--chassis-lo) var(--chassis-hi) var(--chassis-hi) var(--chassis-lo)}
@@ -73,7 +75,7 @@ button.big{background:var(--accent);color:#000}
 .item .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item .x{color:var(--pink);visibility:hidden}
 .item:hover{background:#133313}.item:hover .x{visibility:visible}
-.item.cur{background:var(--lcd-on);color:#000}.item.cur .n{color:#000}
+.item.cur{background:var(--lcd-on);color:var(--lcd)}.item.cur .n{color:var(--lcd)}
 .sphelp{font-size:7px;line-height:13px;padding:10px;color:var(--lcd-on)}
 .sphelp b{color:var(--pink);font-weight:normal}
 .sphelp input{width:100%;font-family:inherit;font-size:7px;padding:6px;margin:6px 0;background:#000;color:var(--lcd-on);border:2px solid var(--lcd-dim);outline:none}
@@ -86,7 +88,7 @@ button.big{background:var(--accent);color:#000}
 .foot{display:flex;gap:6px;margin-top:8px}
 .foot button{flex:1;font-size:7px;padding:9px 0}
 .drop{outline:3px dashed var(--pink);outline-offset:-6px}
-.credit{font-size:6px;text-align:center;margin-top:8px;color:#222}
+.credit{font-size:6px;text-align:center;margin-top:8px;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -121,6 +123,13 @@ button.big{background:var(--accent);color:#000}
     <button id="clr">CLEAR</button>
     <button id="spot" title="Show and control the Spotify desktop app">SPOTIFY</button>
   </div>
+  <div class="opts2">
+    <button id="bpet" title="Your pixel pet">PET</button>
+    <button id="blyr" title="Lyrics">LYRICS</button>
+    <button id="bskin" title="Change the look">SKIN</button>
+    <button id="bclip" title="Save a short video of the pixel animation">CLIP</button>
+    <button id="bamb" title="Full screen pixel scene">AMBIENT</button>
+  </div>
 
   <div class="volrow"><span>VOL</span><div class="bar vol" id="volbar"><div class="fill" id="volfill"></div></div></div>
 
@@ -131,7 +140,7 @@ button.big{background:var(--accent);color:#000}
     <button id="addf">+ FILES</button>
     <button id="addd">+ FOLDER</button>
   </div>
-  <input type="file" id="fin" accept="audio/*" multiple hidden>
+  <input type="file" id="fin" accept="audio/*,.lrc" multiple hidden>
   <input type="file" id="din" webkitdirectory multiple hidden>
   <div class="credit">DRAG &amp; DROP SONGS HERE</div>
 </div>
@@ -173,8 +182,9 @@ function save(file){
 function clean(n){return n.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').toUpperCase()}
 
 async function addFiles(list){
+  let consumed=0; if(window.PTX&&PTX.takeFiles){const r=PTX.takeFiles(list);list=r.rest;consumed=r.n}
   const files=[...list].filter(f=>f.type.startsWith('audio/')||/\.(mp3|wav|ogg|m4a|flac|aac|opus)$/i.test(f.name));
-  if(!files.length){setMarq('NO AUDIO FILES FOUND');return}
+  if(!files.length){if(!consumed)setMarq('NO AUDIO FILES FOUND');return}
   files.sort((a,b)=>a.name.localeCompare(b.name));
   for(const f of files) await save(f);
   render();
@@ -184,6 +194,7 @@ async function addFiles(list){
 /* ---------- playlist UI ---------- */
 function render(){
   pushBuddy(true);
+  if(window.PTX&&PTX.active()){PTX.paint();return}
   if(spot){spList();return}
   const L=$('list'); L.innerHTML='';
   $('count').textContent=songs.length+' SONGS';
@@ -581,6 +592,7 @@ if(window.api&&window.api.onSpotify){
   setInterval(()=>{if(spot){spApply();pushBuddy()}},250);
 }
 $('spot').onclick=()=>{
+  if(window.PTX)PTX.close();
   if(!(window.api&&window.api.spotifyOn)){setMarq('SPOTIFY LINK NEEDS THE DESKTOP APP');return}
   spot=!spot;$('spot').classList.toggle('on',spot);
   if(spot){
@@ -610,6 +622,23 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='n'){next(false)}
   else if(e.key==='p'){prev()}
 });
+/* ---------- bridge for extras.js (pet, lyrics, skins, clip, ambient) ---------- */
+window.PT={
+  state(){
+    if(spot){const ok=sp&&sp.ok;return{src:'spotify',title:ok?sp.title:'',artist:ok?(sp.artist||''):'',playing:!!(ok&&sp.playing),pos:spPos(),dur:ok?sp.dur:0,file:null}}
+    const s=(cur>=0&&songs[cur])?songs[cur]:null;
+    return{src:'mp3',title:s?s.name:'',artist:'',playing:!!s&&!au.paused&&!au.ended,pos:au.currentTime||0,dur:isFinite(au.duration)?au.duration:0,file:s?s.blob:null,name:s?s.name:''};
+  },
+  bars(n){
+    const out=new Array(n).fill(0);
+    if(analyser&&!au.paused&&!spot){analyser.getByteFrequencyData(data);for(let i=0;i<n;i++)out[i]=data[Math.min(data.length-1,1+Math.floor(i*(data.length-1)/n))]/255}
+    else if(spot&&sp&&sp.ok&&sp.playing){const t=Date.now()/1000;for(let i=0;i<n;i++)out[i]=0.25+0.55*Math.abs(Math.sin(t*3.1+i*0.55)*Math.cos(t*1.7+i*0.31))}
+    return out;
+  },
+  marq:setMarq,
+  rerender(){if(!spot)$('plt').textContent='PLAYLIST';render()},
+  isSpotify(){return spot}
+};
 })();
 
 /* ---------- desktop widget controls (only inside the app) ---------- */
@@ -628,5 +657,6 @@ document.addEventListener('keydown',e=>{
   pin.onclick=()=>api.pin().then(v=>pin.classList.toggle('on',v));
 })();
 </script>
+<script src="extras.js"></script>
 </body>
 </html>

@@ -29,6 +29,11 @@
 | 🎛️ **Retro widget** | Green LCD screen, chunky buttons, pixel equalizer. No Windows title bar: drag it anywhere and it remembers its spot. |
 | 🌆 **Live pixel animation** | Every song gets its own looping scene (neon road, rainy city, space). If the song has cover art, it turns into chunky pixels and flashes with the bass. |
 | 🟢 **Spotify mode** | See what Spotify is playing, control it, browse your playlists, and search films, albums and songs without leaving the widget. |
+| 🐣 **Pixel pet** | A pet hatches from an egg and grows into 4 more forms the longer you listen. It dances to your songs and gets sad if you stop. |
+| 📝 **Synced lyrics** | Lyrics scroll in time with the song. Drop a `.lrc` file in, or let the player look them up online. |
+| 🎨 **Skins** | Walkman, Game Boy, Midnight, Sakura, or make your own with a tiny colour file. |
+| 🎬 **Share clip** | One click saves an 8-second video of the pixel animation, ready to post. |
+| 🌌 **Ambient mode** | Turns your whole screen into a pixel scene with the song name and a clock. |
 | 🤖 **Desk Buddy link** | A tiny ESP32 gadget with a screen can show the current song and send play, pause and next. |
 | 📌 **MINI and PIN** | Shrink it to just the screen and buttons, or pin it above every other window. |
 | 🔋 **Keeps playing** | Plays on when the screen goes black, and only blocks PC sleep while a song is actually playing. |
@@ -221,6 +226,16 @@ To stop it starting with Windows, delete that shortcut from the same folder.
 5. **PIN** keeps the widget above all other windows (off by default, so it stays behind your apps).
 6. **_** hides it to the taskbar, and **X** closes it.
 
+### The extras (row of small buttons under SHUFFLE)
+
+| Button | What it does |
+| --- | --- |
+| **PET** | Meet your pixel pet. Play music to feed it. Click it to give it love, and type a name for it. |
+| **LYRICS** | Shows synced lyrics for the current song (MP3 or Spotify). Lyrics come from [LRCLIB](https://lrclib.net), a free lyrics site: only the song name and artist are sent. To use your own, drop a `.lrc` file with the **same name as the song** into the player along with your songs. |
+| **SKIN** | Pick a look. **[ MAKE YOUR OWN SKIN ]** opens a folder with an example `my-skin.json`: change the colours (like `"chassis": "#8fb8a0"`), save, and reopen SKIN. |
+| **CLIP** | While a song plays, records 8 seconds of the animation as a square video and saves it in **Videos > Pixel Tunes clips**. The clip has no sound, so you can add your own music when you post it. |
+| **AMBIENT** | Full-screen pixel scene, like a screensaver. Click or press `Esc` to go back. |
+
 Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 
 ---
@@ -299,6 +314,7 @@ The ESP32 sketches are not in this repository yet.
 | `main.js` | Creates the frameless widget window, remembers its position, blocks sleep during playback |
 | `preload.js` | Safe bridge between the page and the window controls |
 | `pixelart.js` | The pixel animation screen (scenes, cover-art pixelation, beat reaction) |
+| `extras.js` | Pet, lyrics, skins, clip recording and ambient mode |
 | `spotify-link.js`, `spotify-helper.ps1` | Reads and controls the Spotify desktop app through Windows media controls |
 | `spotify-web.js` | Spotify Web API: PKCE login, playlists, search, albums, play |
 | `buddy-server.js` | Local server for the ESP32 Desk Buddy |

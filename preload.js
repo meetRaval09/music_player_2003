@@ -22,5 +22,10 @@ contextBridge.exposeInMainWorld('api', {
   spPlay: (ctx, track, uris) => ipcRenderer.invoke('sp:play', ctx, track, uris),
   spAlbum: (id) => ipcRenderer.invoke('sp:album', id),
   spSearch: (q, off) => ipcRenderer.invoke('sp:search', q, off),
+  lyricsGet: (q) => ipcRenderer.invoke('lyrics:get', q),
+  saveClip: (bytes, ext, title) => ipcRenderer.invoke('clip:save', bytes, ext, title),
+  skinsList: () => ipcRenderer.invoke('skins:list'),
+  skinsOpen: () => ipcRenderer.invoke('skins:open'),
+  ambient: (on) => ipcRenderer.send('w:ambient', !!on),
   onBuddyCmd: (cb) => ipcRenderer.on('buddy:cmd', (_e, name) => cb(name)),
 });
