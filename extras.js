@@ -24,16 +24,16 @@
   /* ---------- little stylesheet for everything below ---------- */
   const css = document.createElement('style');
   css.textContent = `
-  .px{padding:8px;font-size:7px;line-height:12px;color:var(--lcd-on)}
-  .px .back{color:var(--pink);cursor:pointer;margin-bottom:6px}
+  .px{padding:6px 8px;font-size:7px;line-height:11px;color:var(--lcd-on)}
+  .px .back{color:var(--pink);cursor:pointer;margin-bottom:4px}
   .px .mut{color:var(--lcd-dim)}
   .px input{width:100%;font-family:inherit;font-size:8px;padding:5px;background:#000;color:var(--lcd-on);border:2px solid var(--lcd-dim);outline:none;text-transform:uppercase}
   .pet-top{display:flex;gap:8px;align-items:flex-start}
-  .pet-top canvas{width:96px;height:96px;image-rendering:pixelated;background:#000;border:2px solid var(--lcd-dim);cursor:pointer;flex:none}
+  .pet-top canvas{width:84px;height:84px;image-rendering:pixelated;background:#000;border:2px solid var(--lcd-dim);cursor:pointer;flex:none}
   .pet-stats{flex:1;min-width:0}
-  .pet-stats div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:5px}
+  .pet-stats div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
   .pet-stats b{font-weight:normal;color:var(--pink)}
-  .meter{height:8px;background:#000;border:2px solid var(--lcd-dim);margin-top:6px}
+  .meter{height:8px;background:#000;border:2px solid var(--lcd-dim);margin-top:5px}
   .meter i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--lcd-on) 0 4px,#0000 4px 5px)}
   .ly-line{height:16px;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--lcd-dim);text-align:center}
   .ly-line.cur{color:var(--lcd);background:var(--lcd-on)}
@@ -282,10 +282,10 @@
     nameIn.onchange = () => { pet.name = (nameIn.value || 'PIXEL').toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 10) || 'PIXEL'; nameIn.value = pet.name; store.set('pt_pet', pet); };
     stats.appendChild(nameIn);
     const rows = {};
-    ['stage', 'mood', 'age', 'heard', 'streak'].forEach((k) => { const d = mk('div'); rows[k] = d; stats.appendChild(d); });
+    ['stage', 'mood', 'heard', 'age'].forEach((k) => { const d = mk('div'); rows[k] = d; stats.appendChild(d); });
     top.appendChild(stats); w.appendChild(top);
     const meter = mk('div', 'meter'); const fill = document.createElement('i'); meter.appendChild(fill); w.appendChild(meter);
-    const tip = mk('div', 'mut'); tip.style.marginTop = '6px'; w.appendChild(tip);
+    const tip = mk('div', 'mut'); tip.style.marginTop = '5px'; tip.style.lineHeight = '10px'; w.appendChild(tip);
     L.appendChild(w);
     petUI = { cv, rows, fill, tip };
     $('plt').textContent = 'PIXEL PET'; $('count').textContent = 'LV ' + (stageOf(pet.xp) + 1);
@@ -299,9 +299,8 @@
     r.stage.innerHTML = ''; r.stage.append('STAGE: ', Object.assign(mk('b', null, st.name)));
     r.mood.innerHTML = ''; r.mood.append('MOOD: ', mk('b', null, info.stage === 0 && info.mood !== 'DANCING' ? 'WAITING' : info.mood));
     const days = Math.max(1, Math.ceil((now - pet.born) / 86400000));
-    r.age.textContent = 'AGE: ' + days + (days === 1 ? ' DAY' : ' DAYS');
     r.heard.textContent = 'MUSIC: ' + hm(pet.xp);
-    r.streak.textContent = 'STREAK: ' + pet.streak + (pet.streak === 1 ? ' DAY' : ' DAYS');
+    r.age.textContent = 'AGE ' + days + 'D  STREAK ' + pet.streak + 'D';
     petUI.fill.style.width = Math.round(info.prog * 100) + '%';
     $('count').textContent = 'LV ' + (info.stage + 1);
     const nx = STAGES[info.stage + 1];

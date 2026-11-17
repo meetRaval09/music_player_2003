@@ -236,6 +236,40 @@ To stop it starting with Windows, delete that shortcut from the same folder.
 | **CLIP** | While a song plays, records 8 seconds of the animation as a square video and saves it in **Videos > Pixel Tunes clips**. The clip has no sound, so you can add your own music when you post it. |
 | **AMBIENT** | Full-screen pixel scene, like a screensaver. Click or press `Esc` to go back. |
 
+#### 👀 See them in action
+
+<p align="center">
+  <img src="docs/pet-evolution.png" alt="The pixel pet grows from an egg into a crowned Maestro" width="720"><br>
+  <sub><b>Your pet grows</b> the more music you play: Egg, Blip, Bop, Groovy, Maestro</sub>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" valign="top">
+      <img src="docs/pet-dance.gif" alt="Pixel pet dancing to the song" width="250"><br>
+      <b>PET</b><br><sub>dances to your music</sub>
+    </td>
+    <td align="center" valign="top">
+      <img src="docs/lyrics-sync.gif" alt="Synced lyrics scrolling with the song" width="250"><br>
+      <b>LYRICS</b><br><sub>scroll in time with the song</sub>
+    </td>
+    <td align="center" valign="top">
+      <img src="docs/clip-preview.gif" alt="Short clip saved by the CLIP button" width="250"><br>
+      <b>CLIP</b><br><sub>8-second video to share<br><a href="docs/clip-sample.mp4">watch the full sample (MP4)</a></sub>
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="docs/skins.png" alt="Five skins: Classic, Walkman, Game Boy, Midnight and Sakura" width="900"><br>
+  <sub><b>SKINS</b>: Classic, Walkman, Game Boy, Midnight, Sakura (or make your own)</sub>
+</p>
+
+<p align="center">
+  <img src="docs/ambient-mode.gif" alt="Ambient full-screen pixel scene with song name and clock" width="640"><br>
+  <sub><b>AMBIENT</b>: your whole screen becomes a pixel scene</sub>
+</p>
+
 Your playlist is stored inside the app on your PC. It is not uploaded anywhere.
 
 ---
