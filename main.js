@@ -21,6 +21,8 @@ const BUDDY_PORT = 8765;
 const BUDDY_KEY = 'buddy2003';
 let buddyState = { playing: false, pos: 0, dur: 0, index: 0, count: 0, title: '' };
 ipcMain.on('buddy:state', (_e, s) => { buddyState = { ...buddyState, ...s }; });
+let buddyPet = null;
+ipcMain.on('buddy:pet', (_e, s) => { buddyPet = s; });
 
 // ---- Spotify link (Windows media controls) ----
 const spotify = createSpotifyLink((st) => { if (win && !win.isDestroyed()) win.webContents.send('spotify:state', st); });
@@ -123,6 +125,7 @@ function startBuddyServer() {
   const server = createBuddyServer({
     key: BUDDY_KEY,
     getState: () => buddyState,
+    getPet: () => buddyPet,
     onCommand: (name) => { if (win && !win.isDestroyed()) win.webContents.send('buddy:cmd', name); },
   });
   server.on('error', (e) => console.log('Desk Buddy link could not start:', e.message));

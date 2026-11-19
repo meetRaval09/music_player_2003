@@ -1,7 +1,6 @@
 {
   "name": "pixel-tunes-2003",
   "version": "1.2.0",
-  "license": "MIT",
   "description": "Retro pixel-style desktop music player widget",
   "main": "main.js",
   "scripts": {
@@ -28,11 +27,13 @@
       "index.html",
       "pixelart.js",
       "extras.js",
+      "chip8.js",
       "node_modules/@fontsource/press-start-2p/**/*"
     ],
     "win": {
       "target": "dir",
       "signAndEditExecutable": false
     }
-  }
+  },
+  "license": "MIT"
 }

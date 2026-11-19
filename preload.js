@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('api', {
   pin: () => ipcRenderer.invoke('w:pin'),
   getPin: () => ipcRenderer.invoke('w:getPin'),
   buddyState: (s) => ipcRenderer.send('buddy:state', s),
+  buddyPet: (s) => ipcRenderer.send('buddy:pet', s),
   spotifyOn: () => ipcRenderer.send('spotify:on'),
   spotifyOff: () => ipcRenderer.send('spotify:off'),
   spotifyCmd: (n) => ipcRenderer.send('spotify:cmd', n),

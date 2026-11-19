@@ -8,7 +8,7 @@ function oneLine(s) {
   return String(s || '').replace(/[\r\n]+/g, ' ').trim();
 }
 
-function createBuddyServer({ key, getState, onCommand }) {
+function createBuddyServer({ key, getState, getPet, onCommand }) {
   return http.createServer((req, res) => {
     let url;
     try { url = new URL(req.url, 'http://buddy.local'); } catch (e) { res.writeHead(400); return res.end('bad'); }
@@ -30,6 +30,18 @@ function createBuddyServer({ key, getState, onCommand }) {
         s.index || 0,
         s.count || 0,
         oneLine(s.title),
+      ].join('\n') + '\n');
+    }
+
+    if (url.pathname === '/pet') {
+      // line1 stage(0-4) | line2 mood | line3 name | line4 streak | line5 progress % | line6+7 two 32x32 pictures (hex)
+      const p = getPet && getPet();
+      if (!p) { res.writeHead(200); return res.end('-1\n'); }
+      const hex = (x) => String(x || '').replace(/[^0-9a-f]/g, '').slice(0, 256);
+      res.writeHead(200);
+      return res.end([
+        p.stage | 0, oneLine(p.mood).toUpperCase().slice(0, 10), oneLine(p.name).toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 10) || 'PIXEL',
+        p.streak | 0, Math.max(0, Math.min(100, p.pct | 0)), hex(p.f0), hex(p.f1),
       ].join('\n') + '\n');
     }
 

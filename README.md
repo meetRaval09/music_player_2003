@@ -33,6 +33,7 @@
 | 📝 **Synced lyrics** | Lyrics scroll in time with the song. Drop a `.lrc` file in, or let the player look them up online. |
 | 🎨 **Skins** | Walkman, Game Boy, Midnight, Sakura, or make your own with a tiny colour file. |
 | 🎬 **Share clip** | One click saves an 8-second video of the pixel animation, ready to post. |
+| 🎮 **8-BIT mode** | Hear your own song replayed like an old game console: two beepy voices for the tune, a bass voice and little drum sounds. |
 | 🌌 **Ambient mode** | Turns your whole screen into a pixel scene with the song name and a clock. |
 | 🤖 **Desk Buddy link** | A tiny ESP32 gadget with a screen can show the current song and send play, pause and next. |
 | 📌 **MINI and PIN** | Shrink it to just the screen and buttons, or pin it above every other window. |
@@ -235,6 +236,7 @@ To stop it starting with Windows, delete that shortcut from the same folder.
 | **SKIN** | Pick a look. **[ MAKE YOUR OWN SKIN ]** opens a folder with an example `my-skin.json`: change the colours (like `"chassis": "#8fb8a0"`), save, and reopen SKIN. |
 | **CLIP** | While a song plays, records 8 seconds of the animation as a square video and saves it in **Videos > Pixel Tunes clips**. The clip has no sound, so you can add your own music when you post it. |
 | **AMBIENT** | Full-screen pixel scene, like a screensaver. Click or press `Esc` to go back. |
+| **8-BIT** | Click once for chiptune only, again for chiptune mixed with the real song, a third time to turn it off. It listens to the song and re-plays the notes with game-console beeps. Works with your own song files (not Spotify). |
 
 #### 👀 See them in action
 
@@ -263,6 +265,11 @@ To stop it starting with Windows, delete that shortcut from the same folder.
 <p align="center">
   <img src="docs/skins.png" alt="Five skins: Classic, Walkman, Game Boy, Midnight and Sakura" width="900"><br>
   <sub><b>SKINS</b>: Classic, Walkman, Game Boy, Midnight, Sakura (or make your own)</sub>
+</p>
+
+<p align="center">
+  <img src="docs/8bit-mode.png" alt="Player with the 8-BIT button switched on" width="300"><br>
+  <sub><b>8-BIT</b>: the song replayed as game-console beeps</sub>
 </p>
 
 <p align="center">
@@ -311,7 +318,12 @@ Good to know:
 While the player runs, it opens a small server on your home network (port `8765`, protected by a secret key you can change in `main.js`).
 A small ESP32 board with an OLED or a 16x2 LCD can ask it what is playing and show the song name and time, or send play, pause and next.
 Allow Pixel Tunes through Windows Firewall on **Private** networks when Windows asks.
-The ESP32 sketches are not in this repository yet.
+The Desk Buddy can also show your pixel pet on its screen (the PET page, one button press after TIME and SONG). The ESP32 sketches are not in this repository yet.
+
+<p align="center">
+  <img src="docs/buddy-pet.png" alt="The pixel pet shown on the Desk Buddy OLED screen" width="480"><br>
+  <sub><b>DESK BUDDY</b>: your pet, its stage and mood on the tiny OLED</sub>
+</p>
 
 ---
 

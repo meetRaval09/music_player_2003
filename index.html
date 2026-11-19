@@ -61,8 +61,8 @@ button.on{color:var(--pink)}
 button.big{background:var(--accent);color:#000}
 .opts{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
 .opts button{font-size:7px;padding:8px 0}
-.opts2{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
-.opts2 button{font-size:6px;padding:8px 0}
+.opts2{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-bottom:8px}
+.opts2 button{font-size:5px;padding:8px 0;min-width:0;overflow:hidden;letter-spacing:0}
 .volrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:7px;color:var(--ink)}
 .volrow .bar{flex:1;margin-top:0}
 .plhead{background:#000;color:var(--pink);font-size:8px;padding:6px;display:flex;justify-content:space-between;border:2px solid #000}
@@ -129,6 +129,7 @@ button.big{background:var(--accent);color:#000}
     <button id="bskin" title="Change the look">SKIN</button>
     <button id="bclip" title="Save a short video of the pixel animation">CLIP</button>
     <button id="bamb" title="Full screen pixel scene">AMBIENT</button>
+    <button id="b8" title="Hear the song as an old game console would play it">8-BIT</button>
   </div>
 
   <div class="volrow"><span>VOL</span><div class="bar vol" id="volbar"><div class="fill" id="volfill"></div></div></div>
@@ -153,7 +154,7 @@ button.big{background:var(--accent);color:#000}
 const $=id=>document.getElementById(id);
 const au=$('au');
 let songs=[];          // {id,name,blob}
-let cur=-1, shuffle=false, repeat=false, url=null, ctx, analyser, data;
+let cur=-1, shuffle=false, repeat=false, url=null, ctx, analyser, data, origGain;
 let marqText='', marqPos=0;
 let spot=false, sp=null, spAt=0, spKey='';
 let spView='lists', spPl=null, spQ='', spRes=[], spMore=false;
@@ -224,7 +225,8 @@ function setupAudioGraph(){
     const src=ctx.createMediaElementSource(au);
     analyser=ctx.createAnalyser();analyser.fftSize=64;
     data=new Uint8Array(analyser.frequencyBinCount);
-    src.connect(analyser);analyser.connect(ctx.destination);
+    origGain=ctx.createGain();
+    src.connect(analyser);analyser.connect(origGain);origGain.connect(ctx.destination);
   }catch(e){}
 }
 function playIndex(i){
@@ -635,6 +637,7 @@ window.PT={
     else if(spot&&sp&&sp.ok&&sp.playing){const t=Date.now()/1000;for(let i=0;i<n;i++)out[i]=0.25+0.55*Math.abs(Math.sin(t*3.1+i*0.55)*Math.cos(t*1.7+i*0.31))}
     return out;
   },
+  audio(){return ctx?{ctx,au,origGain}:null},
   marq:setMarq,
   rerender(){if(!spot)$('plt').textContent='PLAYLIST';render()},
   isSpotify(){return spot}
@@ -658,5 +661,6 @@ window.PT={
 })();
 </script>
 <script src="extras.js"></script>
+<script src="chip8.js"></script>
 </body>
 </html>

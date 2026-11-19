@@ -266,6 +266,29 @@
     const prog = nextAt ? (pet.xp - STAGES[stage].at) / (nextAt - STAGES[stage].at) : 1;
     return { stage, prog, mood: petMood(now), hue: HUES[pet.seed % HUES.length], hearts: now < tapUntil };
   };
+
+  // ---- send the pet to the Desk Buddy (ESP32 screen): two animation frames as 32x32 black/white pictures ----
+  const bcv = document.createElement('canvas'); bcv.width = 32; bcv.height = 32;
+  function petBits(o, t) {
+    drawPet(bcv, { ...o, t });
+    const d = bcv.getContext('2d').getImageData(0, 0, 32, 32).data;
+    let hex = '';
+    for (let y = 0; y < 32; y++) for (let bx = 0; bx < 4; bx++) {
+      let v = 0;
+      for (let k = 0; k < 8; k++) { const i = (y * 32 + bx * 8 + k) * 4; const lum = (d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11) / 255; let on = 0; if (d[i + 3] > 100 && lum > 0.2) { const x = bx * 8 + k; on = (lum > 0.45 && lum < 0.8) ? ((x + y) & 1 ? 0 : 1) : 1; } v = (v << 1) | on; }
+      hex += (v < 16 ? '0' : '') + v.toString(16);
+    }
+    return hex;
+  }
+  function sendPetToBuddy() {
+    if (!(window.api && window.api.buddyPet)) return;
+    const info = petInfo(Date.now());
+    window.api.buddyPet({
+      stage: info.stage, mood: info.mood, name: pet.name, streak: pet.streak, pct: Math.round(info.prog * 100),
+      f0: petBits(info, 0.0), f1: petBits(info, 0.3),
+    });
+  }
+  setInterval(sendPetToBuddy, 3000); setTimeout(sendPetToBuddy, 1500);
   const hm = (s) => { const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return h ? h + 'H ' + m + 'M' : m + 'M ' + (s % 60) + 'S'; };
 
   let petUI = null;
@@ -627,5 +650,5 @@
     }
   }
   $('bclip').onclick = () => recordClip(8);
-  window.PTX_test = { recordClip, drawPet, STAGES, pet: () => pet, setXp: (x) => { pet.xp = x; }, lrcParse, readId3 };
+  window.PTX_test = { petBits, petInfo, recordClip, drawPet, STAGES, pet: () => pet, setXp: (x) => { pet.xp = x; }, lrcParse, readId3 };
 })();
